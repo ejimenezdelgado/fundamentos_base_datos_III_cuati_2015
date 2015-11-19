@@ -41,13 +41,13 @@ create table trabajos(
  alter table trabajos
  add constraint fk_codc
  foreign key (codc)
- references  conductores
+ references  conductores;
 
 --llave foranea de la tabla maquinas en la tabla trabajos
  alter table trabajos
  add constraint fk_codm
  foreign key (codm)
- references maquinas
+ references maquinas;
 
 --ingreso de datos de la tabla (Proyectos)
  insert into  proyectos values ('P01','Garaje','Arganda','Felipe Sol','600111111');

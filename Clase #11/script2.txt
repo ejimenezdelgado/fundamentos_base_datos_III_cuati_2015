@@ -1,0 +1,220 @@
+-Consulta simple
+select codp, descrip, localidad, cliente, telefono
+from  proyectos;
+
+select *
+from  proyectos;
+
+--distinct
+select codm
+from  trabajos;
+
+select distinct codm
+from  trabajos;
+
+--recuperacion calificada
+select codc
+from  conductores
+where localidad = 'Arganda';
+
+SELECT codC
+FROM  conductores
+WHERE localidad = 'Arganda' AND categ < 18;
+
+--between
+SELECT nombre, preciohora
+FROM  maquinas
+WHERE preciohora BETWEEN 5000 AND 10000;
+
+--like
+SELECT nombre
+FROM  conductores
+ WHERE nombre LIKE '%Perez%';
+
+--IN
+SELECT nombre
+ FROM  conductores
+ WHERE localidad IN ('Arganda','Rivas');
+
+--NOT IN
+ SELECT nombre
+FROM  conductores
+WHERE localidad NOT IN ('Arganda');
+
+ --IS NULL
+ SELECT codC,codM,codP,Fecha
+FROM  trabajos
+WHERE tiempo IS NULL;
+
+-- <> ALL == NOT IN
+ SELECT descrip, localidad
+ FROM  proyectos
+ WHERE localidad not in ('Arganda','Rivas');
+
+-- Exits
+SELECT nombre
+FROM  maquinas
+WHERE EXISTS (SELECT * FROM  trabajos
+WHERE trabajos.codM = maquinas.codM
+AND codP = 'P03');
+
+--union
+SELECT codC
+FROM  conductores
+WHERE localidad = 'Rivas'
+UNION
+ SELECT codC
+ FROM  conductores
+WHERE categ < 18;
+
+SELECT codC
+FROM  conductores
+WHERE localidad = 'Rivas'
+ UNION ALL
+SELECT codC
+FROM  conductores
+WHERE categ < 18
+UNION ALL
+SELECT codC
+FROM  trabajos
+WHERE codM = 'M01';
+
+--Except
+SELECT codC
+FROM  conductores
+WHERE categ < 18
+EXCEPT
+ SELECT codC
+ FROM  trabajos
+WHERE codM = 'M03';
+
+SELECT codC
+FROM  conductores
+WHERE categ < 18
+AND codC NOT IN (SELECT codC
+FROM  trabajos
+WHERE codM = 'M03');
+
+--intersect
+SELECT codC
+FROM  trabajos
+WHERE codM = 'M01'
+INTERSECT
+SELECT codC
+FROM  trabajos
+WHERE codM = 'M03';
+
+SELECT codC
+FROM  trabajos
+WHERE codM = 'M01'
+AND codC IN (SELECT codC
+FROM  trabajos
+WHERE codM = 'M03');
+
+--funciones agregadas
+--COUNT
+SELECT COUNT(*)
+ FROM  trabajos;
+
+ SELECT COUNT (DISTINCT codM)
+FROM  trabajos
+WHERE codP = 'P02';
+
+--Precio medio por hora
+SELECT AVG(preciohora)
+FROM  maquinas
+
+--MAX
+SELECT max(nombre), max(preciohora)
+FROM  maquinas;
+
+--» Obtener la máxima fecha, el mínimo tiempo y la suma y media del tiempo de la tabla trabajos
+SELECT max(fecha), min(tiempo), sum(tiempo), avg(tiempo)
+FROM  trabajos;
+
+-- Contar el número de filas de la tabla trabajos, numero de valores de la columna tiempo, 
+--y número de valores distintos de dicha columna
+SELECT count(*), count(tiempo), count(distinct tiempo)
+FROM  trabajos; 
+
+--group by
+SELECT codC, SUM(tiempo)
+FROM  trabajos
+GROUP BY codC;
+
+--Having
+SELECT codC, SUM (tiempo)
+FROM  trabajos
+GROUP BY codC
+HAVING COUNT(*) > 1;
+
+SELECT codC, codM, SUM (tiempo)
+FROM  trabajos
+WHERE fecha BETWEEN '12/09/02' AND '18/09/94'
+GROUP BY codC , codM
+HAVING COUNT(*) > 1;
+
+SELECT *
+FROM  trabajos
+WHERE codP = 'P04'
+ORDER BY codP, codM;
+
+--Obtener nombres de trabajadores que han utilizado la máquina 'M2'
+SELECT nombre
+FROM  conductores
+WHERE codC IN (SELECT codC
+FROM  trabajos
+WHERE codM = 'M02');
+
+SELECT nombre
+FROM  conductores,  trabajos
+WHERE conductores.codC = trabajos.codC AND codM = 'M02';
+
+SELECT nombre
+FROM  conductores INNER JOIN  trabajos
+ON conductores. codC = trabajos. codC
+WHERE codM = 'M02';
+
+--Consultas Anidadas
+-- IN
+SELECT descrip, cliente
+FROM  proyectos
+WHERE codp In (SELECT codP
+FROM  trabajos
+WHERE codM In (SELECT CodM
+FROM  maquinas
+WHERE preciohora > 12000)
+AND codC In (SELECT codC
+FROM  conductores
+WHERE localidad = 'Rivas'));
+
+--ANY
+SELECT nombre
+FROM  conductores
+WHERE categ < ANY (SELECT categ
+FROM  conductores
+WHERE localidad = 'Arganda');
+
+--<> ALL / NOT IN 
+SELECT nombre
+FROM  conductores
+WHERE codC not in (SELECT codC
+FROM  trabajos
+WHERE codP = 'P01');
+
+--Comparacion
+SELECT nombre
+FROM  conductores
+WHERE categ = (SELECT MAX(categ)
+FROM  conductores
+WHERE localidad = 'Arganda')
+AND localidad = 'Arganda';
+
+--exist
+SELECT *
+FROM  conductores C
+WHERE NOT EXISTS (SELECT *
+FROM  conductores C1
+WHERE C1.nombre = C.nombre
+AND C1.localidad = C.localidad
+AND C1.categ <> C.categ)
