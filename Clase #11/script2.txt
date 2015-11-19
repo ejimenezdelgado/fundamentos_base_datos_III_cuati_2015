@@ -218,3 +218,94 @@ FROM  conductores C1
 WHERE C1.nombre = C.nombre
 AND C1.localidad = C.localidad
 AND C1.categ <> C.categ)
+
+--NOT IN
+SELECT *
+FROM  conductores C
+WHERE (nombre,localidad) NOT IN (SELECT nombre,localidad
+FROM  conductores C1
+WHERE C1.categ <> C.categ)
+
+SELECT nombre, localidad, categ,
+(SELECT MAX(categ) FROM  conductores) As MaxCateg
+FROM  conductores
+WHERE localidad = 'Loeches' AND
+categ >= ALL (SELECT categ
+FROM  conductores
+WHERE localidad = 'Loeches');
+
+--condicion JOIN
+SELECT conductores.nombre AS cond, descrip,maquinas.nombre AS
+maq
+FROM  conductores,  trabajos,  proyectos,  maquinas
+WHERE conductores.codc=trabajos.codC AND
+trabajos.codp = proyectos.codP AND
+trabajos.codm = maquinas.codM AND
+preciohora > 14000
+
+
+--INNER JOIN
+SELECT nombre, tiempo
+FROM  conductores INNER JOIN  trabajos ON
+ conductores.codC=trabajos.codC
+WHERE fecha = '10/09/02';
+
+
+--LEFT JOIN
+SELECT nombre, codm, codp, fecha, tiempo
+FROM  conductores LEFT JOIN  trabajos
+ON conductores.codC=trabajos.codC
+WHERE localidad = 'Rivas';
+
+--RIGHT JOIN
+SELECT nombre, codm, codp, fecha, tiempo
+FROM  conductores RIGHT JOIN  trabajos
+ON conductores.codC=trabajos.codC
+WHERE localidad = 'Rivas';
+
+--FULL JOIN
+SELECT nombre, codm, descrip,tiempo
+FROM  conductores FULL JOIN  trabajos ON conductores.codC =
+trabajos.codC
+FULL JOIN  proyectos ON trabajos.codP = proyectos.codP
+WHERE conductores.localidad = 'Rivas' OR proyectos.localidad = 'Rivas';
+
+--INSERT
+--Se cambia el parametro codc de C02 a C04 porque no permitia la combinacion de esos parametros por pk compuesta.
+INSERT INTO  trabajos VALUES ('C04','M03','P01','10/09/2002',100);
+
+INSERT INTO  Conductores VALUES ('C07', 'Jorge Gil','',18);
+
+--insert ingresando columnas seleccionadas
+INSERT INTO  Conductores (codC,nombre,categ) 
+	VALUES ('C08', 'Jorge Gil', 18);
+
+/* ********** Revisar **************/
+INSERT INTO  conductores (SELECT * FROM  Conductores
+WHERE localidad = 'Arganda');
+	values ('C09','Roberto Gomez','Martinica',50);
+/*********************************/
+
+
+--UPDATES
+--Modificacion de filas
+UPDATE  conductores
+SET categ = categ * 1.15
+WHERE localidad = 'Rivas'
+
+--valor original del registro C05 categ=12 
+UPDATE  conductores
+SET categ = categ + (SELECT distinct categ
+	FROM  conductores
+	 WHERE categ = (SELECT max(categ)
+		FROM  conductores))
+WHERE localidad = 'Loeches'
+
+--DELETE
+--Operaciones de actualizacion
+DELETE FROM  proyectos
+WHERE codp = 'P02';
+
+DELETE FROM  proyectos
+	WHERE codP NOT IN (SELECT codP
+			   FROM  trabajos)
