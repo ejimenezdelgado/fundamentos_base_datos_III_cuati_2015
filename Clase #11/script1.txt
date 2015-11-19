@@ -1,0 +1,87 @@
+CREATE DATABASE db_proyectos;
+
+create table proyectos(
+	codp char(3) constraint pk_codp primary key,
+	descrip varchar(15),
+	localidad varchar(15),
+	cliente varchar(15),
+	telefono varchar(15) 
+	 );
+
+create table conductores(
+	codc char(3) constraint pk_codc primary key,
+	nombre varchar(15),
+	localidad varchar(15),
+	categ numeric(2)
+	);
+
+create table maquinas(
+	codm char(3) constraint pk_codm primary key,
+	nombre varchar(15),
+	precioHora numeric(6)
+	);
+
+--Se agregan los primeros 4 campos como llave primaria compuesta.
+create table trabajos(
+	codc char(3),
+	codm char(3),
+	codp char(3),
+	fecha date,
+	tiempo numeric(3),
+		constraint pk_trabajos primary key (codc,codm,codp,fecha)
+	);
+
+--llave foranea de la tabla proyectos en la tabla trabajos
+ alter table trabajos
+ add constraint fk_codp
+ foreign key (codp)
+ references proyectos;
+
+--llave foranea de la tabla conductores en la tabla trabajos
+ alter table trabajos
+ add constraint fk_codc
+ foreign key (codc)
+ references  conductores
+
+--llave foranea de la tabla maquinas en la tabla trabajos
+ alter table trabajos
+ add constraint fk_codm
+ foreign key (codm)
+ references maquinas
+
+--ingreso de datos de la tabla (Proyectos)
+ insert into  proyectos values ('P01','Garaje','Arganda','Felipe Sol','600111111');
+ insert into  proyectos values ('P02','Solado','Rivas','Jose Perez','912222222');
+ insert into  proyectos values ('P03','Garaje','Arganda','Rosa Lopez','666999666');
+ insert into  proyectos values ('P04','Techado','Loeches','Jose Perez','913333333');
+ insert into  proyectos values ('P05','Buhardilla','Rivas','Ana Botijo','');
+
+--ingreso de datos de la tabla (Conductores)
+insert into  conductores values ('C01','Jose Sanchez','Arganda',18); 
+insert into  conductores values ('C02','Manuel Diaz','Arganda',15);
+insert into  conductores values ('C03','Juan Perez','Rivas',20);
+insert into  conductores values ('C04','Luis Ortiz','Arganda',18);
+insert into  conductores values ('C05','Javier Martin','Loeches',12);
+insert into  conductores values ('C06','Carmen Perez','Rivas',15);
+
+--ingreso de datos de la tabla (Maquinas)
+insert into  maquinas values ('M01','Excavadora',15000);
+insert into  maquinas values ('M02','Hormigonera',10000);
+insert into  maquinas values ('M03','Volquete',11000);
+insert into  maquinas values ('M04','Apisonadora',18000);
+
+--ingreso de datos de la tabla (Trabajos)
+insert into  trabajos values ('C02','M03','P01','10/09/02',100);
+insert into  trabajos values ('C03','M01','P02','10/09/02',200);
+insert into  trabajos values ('C05','M03','P02','10/09/02',150);
+insert into  trabajos values ('C04','M03','P02','10/09/02',90);
+insert into  trabajos values ('C01','M02','P02','12/09/02',120);
+insert into  trabajos values ('C02','M03','P03','13/09/02',30);
+insert into  trabajos values ('C03','M01','P04','15/09/02',300);
+insert into  trabajos values ('C02','M03','P02','15/09/02', null);
+insert into  trabajos values ('C01','M03','P04','15/09/02',180);
+insert into  trabajos values ('C05','M03','P04','15/09/02',90);
+insert into  trabajos values ('C01','M02','P04','17/09/02', null);
+insert into  trabajos values ('C02','M03','P01','18/09/02', null);
+
+/******************************************** CONSULTAS ********************************************/
